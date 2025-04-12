@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة القيم الغذائية</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .input-section {
+            margin-bottom: 20px;
+        }
+        .result-section {
+            margin-top: 30px;
+        }
+        .results-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .result-box {
+            flex-basis: 48%;
+            margin-bottom: 15px;
+            background-color: #E6F2FF;
+            border-radius: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .adjusted-result {
+            background-color: #FFD700;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input#newWeight {
+            background-color: #FFA07A;
+            font-weight: bold;
+        }
+        select {
+            background-color: #FFFF99;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #D7E4BC;
+        }
+        .instructions {
+            margin-top: 30px;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 0.9em;
+        }
+        @media (max-width: 500px) {
+            .result-box {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>حاسبة القيم الغذائية</h1>
+        <p style="text-align: center;">يمكنك حساب القيم الغذائية حسب الوزن المطلوب</p>
+        
+        <div class="input-section">
+            <label for="foodSelect">اختر العنصر الغذائي:</label>
+            <select id="foodSelect">
+                <option value="">-- اختر العنصر --</option>
+            </select>
+            
+            <div id="weightSection" style="display: none;">
+                <label for="originalWeight">الوزن الأصلي (جرام/قطعة):</label>
+                <input type="text" id="originalWeight" readonly>
+                
+                <label for="newWeight">أدخل الوزن الجديد (جرام):</label>
+                <input type="number" id="newWeight" placeholder="أدخل الوزن الجديد">
+            </div>
+        </div>
+        
+        <div class="result-section" id="resultsSection" style="display: none;">
+            <h2>القيم الغذائية الأصلية</h2>
+            <div class="results-container">
+                <div class="result-box">
+                    <label>السعرات الحرارية:</label>
+                    <div id="originalCalories"></div>
+                </div>
+                <div class="result-box">
+                    <label>الدهون الصحية (جرام):</label>
+                    <div id="originalFats"></div>
+                </div>
+                <div class="result-box">
+                    <label>الكاربوهيدرات (جرام):</label>
+                    <div id="originalCarbs"></div>
+                </div>
+                <div class="result-box">
+                    <label>البروتين (جرام):</label>
+                    <div id="originalProtein"></div>
+                </div>
+            </div>
+            
+            <h2>القيم الغذائية المعدلة</h2>
+            <div class="results-container">
+                <div class="result-box adjusted-result">
+                    <label>السعرات الحرارية المعدلة:</label>
+                    <div id="adjustedCalories"></div>
+                </div>
+                <div class="result-box adjusted-result">
+                    <label>الدهون الصحية المعدلة (جرام):</label>
+                    <div id="adjustedFats"></div>
+                </div>
+                <div class="result-box adjusted-result">
+                    <label>الكاربوهيدرات المعدلة (جرام):</label>
+                    <div id="adjustedCarbs"></div>
+                </div>
+                <div class="result-box adjusted-result">
+                    <label>البروتين المعدل (جرام):</label>
+                    <div id="adjustedProtein"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>أوزان شائعة للمساعدة</h2>
+        <table>
+            <tr>
+                <th>وحدة القياس</th>
+                <th>الوزن التقريبي</th>
+            </tr>
+            <tr>
+                <td>ملعقة شاي</td>
+                <td>5 جرام</td>
+            </tr>
+            <tr>
+                <td>ملعقة طعام</td>
+                <td>15 جرام</td>
+            </tr>
+            <tr>
+                <td>كوب صغير</td>
+                <td>100 جرام</td>
+            </tr>
+            <tr>
+                <td>كوب متوسط</td>
+                <td>200 جرام</td>
+            </tr>
+            <tr>
+                <td>كوب كبير</td>
+                <td>250 جرام</td>
+            </tr>
+            <tr>
+                <td>قطعة دجاج متوسطة</td>
+                <td>150 جرام</td>
+            </tr>
+            <tr>
+                <td>شريحة لحم صغيرة</td>
+                <td>100 جرام</td>
+            </tr>
+            <tr>
+                <td>شريحة لحم متوسطة</td>
+                <td>200 جرام</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="container instructions">
+        <h2>تعليمات الاستخدام</h2>
+        <ol>
+            <li>اختر العنصر الغذائي من القائمة المنسدلة</li>
+            <li>ستظهر القيم الغذائية الأصلية تلقائياً بالإضافة إلى الوزن الأصلي</li>
+            <li>أدخل الوزن الجديد الذي تريد حساب القيم الغذائية له</li>
+            <li>ستظهر القيم الغذائية المعدلة تلقائياً حسب الوزن الجديد</li>
+        </ol>
+    </div>
+    
+    <div class="container">
+        <h2>جدول البيانات الغذائية الكامل</h2>
+        <table id="dataTable">
+            <tr>
+                <th>العنصر الغذائي</th>
+                <th>السعرات الحرارية</th>
+                <th>الدهون (جرام)</th>
+                <th>الكاربوهيدرات (جرام)</th>
+                <th>البروتين (جرام)</th>
+                <th>الوزن (جرام/قطعة)</th>
+            </tr>
+            <!-- البيانات ستضاف هنا بواسطة جافاسكريبت -->
+        </table>
+    </div>
+    
+    <footer>
+        &copy; 2025 حاسبة القيم الغذائية - يمكن استخدامها على جميع الأجهزة
+    </footer>
+
+    <script>
+        // بيانات العناصر الغذائية
+        // [السعرات الحرارية, الدهون الصحية, الكاربوهيدرات, البروتين, الوزن, "العنصر الغذائي"]
+        const nutritionData = [
+            [165, 3, 0, 30, 100, "صدر دجاج مشوي"],
+            [250, 12, 0, 30, 100, "لحم بقر خالي الدهون"],
+            [18, 0, 0, 3.5, 1, "بياض البيض"],
+            [150, 6, 0, 22, 100, "سمك"],
+            [150, 7, 0, 22, 100, "تونا معلب"],
+            [120, 3, 12, 8, 250, "حليب قليل الدسم"],
+            [60, 2, 7, 5, 100, "زبادي قليل الدسم"],
+            [60, 4.5, 0, 2.5, 1, "صفار البيض"],
+            [390, 7, 66, 16, 100, "شوفان"],
+            [93, 0, 21, 2, 100, "بطاطا مشوية /مسلوقة"],
+            [97, 0, 21, 2, 100, "أرز مطبوخ"],
+            [90, 0, 18, 3, 100, "برغل مطبوخ"],
+            [150, 0, 35, 1, 1, "موز"],
+            [52, 0, 14, 0, 1, "تفاحة"],
+            [88, 0, 18, 0.5, 28, "تمر"],
+            [590, 50, 30, 25, 100, "مكسرات"],
+            [150, 17, 0, 0, 20, "زبدة حيواني"],
+            [100, 10, 0, 0, 10, "زيت زيتون"]
+        ];
+
+        // ملء القائمة المنسدلة بالعناصر الغذائية
+        const foodSelect = document.getElementById('foodSelect');
+        nutritionData.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item[5];
+            option.textContent = item[5];
+            foodSelect.appendChild(option);
+        });
+
+        // ملء جدول البيانات الكامل
+        const dataTable = document.getElementById('dataTable');
+        nutritionData.forEach(item => {
+            const row = document.createElement('tr');
+            // ترتيب البيانات في الجدول [العنصر الغذائي, السعرات, الدهون, الكاربوهيدرات, البروتين, الوزن]
+            row.innerHTML = `
+                <td>${item[5]}</td>
+                <td>${item[0]}</td>
+                <td>${item[1]}</td>
+                <td>${item[2]}</td>
+                <td>${item[3]}</td>
+                <td>${item[4]}</td>
+            `;
+            dataTable.appendChild(row);
+        });
+
+        // متغيرات لتخزين العناصر في HTML
+        const originalWeight = document.getElementById('originalWeight');
+        const newWeight = document.getElementById('newWeight');
+        const originalCalories = document.getElementById('originalCalories');
+        const originalFats = document.getElementById('originalFats');
+        const originalCarbs = document.getElementById('originalCarbs');
+        const originalProtein = document.getElementById('originalProtein');
+        const adjustedCalories = document.getElementById('adjustedCalories');
+        const adjustedFats = document.getElementById('adjustedFats');
+        const adjustedCarbs = document.getElementById('adjustedCarbs');
+        const adjustedProtein = document.getElementById('adjustedProtein');
+        const weightSection = document.getElementById('weightSection');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // متغيرات لتخزين القيم الحالية
+        let currentItem = null;
+
+        // عند تغيير العنصر الغذائي
+        foodSelect.addEventListener('change', function() {
+            const selectedFood = this.value;
+            if (selectedFood) {
+                // البحث عن العنصر المحدد في البيانات
+                currentItem = nutritionData.find(item => item[5] === selectedFood);
+                if (currentItem) {
+                    // عرض قسم الوزن
+                    weightSection.style.display = 'block';
+                    resultsSection.style.display = 'block';
+                    
+                    // تعبئة القيم الأصلية
+                    originalWeight.value = currentItem[4];
+                    originalCalories.textContent = currentItem[0];
+                    originalFats.textContent = currentItem[1];
+                    originalCarbs.textContent = currentItem[2];
+                    originalProtein.textContent = currentItem[3];
+                    
+                    // محاكاة تغيير في الوزن الجديد لحساب القيم المعدلة
+                    if (newWeight.value) {
+                        calculateAdjustedValues();
+                    } else {
+                        // مسح القيم المعدلة إذا لم يكن هناك وزن جديد
+                        adjustedCalories.textContent = "-";
+                        adjustedFats.textContent = "-";
+                        adjustedCarbs.textContent = "-";
+                        adjustedProtein.textContent = "-";
+                    }
+                }
+            } else {
+                // إخفاء الأقسام إذا لم يتم تحديد عنصر
+                weightSection.style.display = 'none';
+                resultsSection.style.display = 'none';
+                currentItem = null;
+            }
+        });
+
+        // عند تغيير الوزن الجديد
+        newWeight.addEventListener('input', calculateAdjustedValues);
+
+        // دالة لحساب القيم المعدلة
+        function calculateAdjustedValues() {
+            if (currentItem && newWeight.value) {
+                const weight = parseFloat(newWeight.value);
+                const originalWeightValue = parseFloat(currentItem[4]);
+                
+                if (weight > 0 && originalWeightValue > 0) {
+                    const ratio = weight / originalWeightValue;
+                    
+                    // حساب القيم المعدلة وتقريبها إلى منزلة عشرية واحدة
+                    adjustedCalories.textContent = (currentItem[0] * ratio).toFixed(1);
+                    adjustedFats.textContent = (currentItem[1] * ratio).toFixed(1);
+                    adjustedCarbs.textContent = (currentItem[2] * ratio).toFixed(1);
+                    adjustedProtein.textContent = (currentItem[3] * ratio).toFixed(1);
+                } else {
+                    // عرض رسالة خطأ إذا كان الوزن صفر أو سالب
+                    adjustedCalories.textContent = "أدخل وزناً صحيحاً";
+                    adjustedFats.textContent = "-";
+                    adjustedCarbs.textContent = "-";
+                    adjustedProtein.textContent = "-";
+                }
+            } else {
+                // مسح القيم المعدلة إذا لم يتم إدخال وزن جديد
+                adjustedCalories.textContent = "-";
+                adjustedFats.textContent = "-";
+                adjustedCarbs.textContent = "-";
+                adjustedProtein.textContent = "-";
+            }
+        }
+    </script>
+</body>
+</html>
